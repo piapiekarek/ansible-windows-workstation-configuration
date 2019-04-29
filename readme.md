@@ -57,6 +57,29 @@ ansible-playbook \
   #ansible-playbook windows-rtlab-test.yml -i "192.168.120.235,"
 ```
 
+## Using inventory
+
+Instead of passing the ip-addresses as arguments, they can be written into the inventoryfile (default: `/etc/ansible/hosts`)
+```bash
+# IP without any group
+192.168.120.144
+
+[group_name_1]
+192.168.120.48
+192.168.120.77
+
+[group_name_2]
+192.168.120.77 #same IP linke in Group group_name_1
+192.168.120.79
+192.168.120.119
+```
+Afterwards, the following shell commands can be used:
+```bash
+$ ansible-playbook <File_Name>
+# or with a group
+$ ansible-playbook <File_Name> -l group_name_1
+```
+
 ## Alternatives
 
 https://www.opsi.org/
