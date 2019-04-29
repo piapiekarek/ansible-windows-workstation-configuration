@@ -1,6 +1,6 @@
-# Lab ansible cad-workstation configuration
+# Ansible Windows workstation configuration
 
-This Ansible playbook is an example for automated software installation. It is used to configure CAD-Workstations in the Lab.
+This Ansible playbook is an example for automated software installation. It is used to configure my Workstation.
 
 ## Requirements for Ansible host
 The ansible host has to be a Linux machine. For the case that only a Windows (10!!!) Machine is availible, [install the Linux Subsystem](https://docs.microsoft.com/en-us/windows/wsl/install-win10) on the device.
