@@ -38,20 +38,23 @@ Change ansible_user and ansible_password in the vars section before running the 
 ``` bash
 ansible-playbook \
   windows-rtlab-test.yml \
-  -i "192.168.120.235,"
+  -i "<ip-address>," --user "<user_name>" --ask-pass
 
-  #ansible-playbook windows-rtlab-test.yml -i "192.168.120.235,"
+  #ansible-playbook windows-rtlab-test.yml -i "192.168.120.235," --user "John Doe" --ask-pass
 ```
+
+
 Warning: The command above needs a comma separated list of arguments, thus the comma at the end of the IP Address.
 
-instead of settin the user and password in the file you can pass the following arguments:
+instead of passing the arguments in the command line, you can set them inside the yml file (uncomment the lines ansible_user and ansible_password, and set both)
+Afterwards run the following command:
 
 ``` bash
 ansible-playbook \
   windows-rtlab-test.yml \
-  -i "<ip-address>," --user "<user_name>" --ask-pass
+  -i "192.168.120.235,"
 
-  #ansible-playbook windows-rtlab-test.yml -i "192.168.120.235," --user "John Doe" --ask-pass
+  #ansible-playbook windows-rtlab-test.yml -i "192.168.120.235,"
 ```
 
 ## Alternatives
