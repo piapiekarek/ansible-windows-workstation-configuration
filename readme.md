@@ -18,7 +18,7 @@ sudo dnf install python3-winrm
 
 To access the client machines from remote winrm is used.
 
-[Windows setup guide, see Capter Setup WinRM](https://docs.ansible.com/ansible/latest/user_guide/windows_setup.html)
+[Windows setup guide, see Chapter Setup WinRM](https://docs.ansible.com/ansible/latest/user_guide/windows_setup.html)
 
 Run as administrator in powershell!
 
