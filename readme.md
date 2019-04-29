@@ -3,10 +3,14 @@
 This Ansible playbook is an example for automated software installation. It is used to configure CAD-Workstations in the Lab.
 
 ## Requirements for Ansible host
+The ansible host has to be a Linux machine. For the case that only a Windows (10!!!) Machine is availible, [install the Linux Subsystem](https://docs.microsoft.com/en-us/windows/wsl/install-win10) on the device.
 
-On Linux install pywinrm:
+Afterwards install pywinrm:
 
 ``` bash
+## for debian and ubuntu
+sudo apt-get install python3-winrm
+## for fedora
 sudo dnf install python3-winrm
 ```
 
@@ -14,9 +18,9 @@ sudo dnf install python3-winrm
 
 To access the client machines from remote winrm is used.
 
-[Windows setup guide](https://docs.ansible.com/ansible/latest/user_guide/windows_setup.html)
+[Windows setup guide, see Capter Setup WinRM](https://docs.ansible.com/ansible/latest/user_guide/windows_setup.html)
 
-Run as administrotor in powershell!
+Run as administrator in powershell!
 
 ``` powershell
 $url = "https://raw.githubusercontent.com/ansible/ansible/devel/examples/scripts/ConfigureRemotingForAnsible.ps1"
@@ -26,13 +30,28 @@ $file = "$env:temp\ConfigureRemotingForAnsible.ps1"
 
 powershell.exe -ExecutionPolicy ByPass -File $file
 ```
+## Requirements for yml file
+Change ansible_user and ansible_password in the vars section before running the script!
 
-## Run
+## Run on Ansible host
 
 ``` bash
 ansible-playbook \
   windows-rtlab-test.yml \
   -i "192.168.120.235,"
+
+  #ansible-playbook windows-rtlab-test.yml -i "192.168.120.235,"
+```
+Warning: The command above needs a comma separated list of arguments, thus the comma at the end of the IP Address.
+
+instead of settin the user and password in the file you can pass the following arguments:
+
+``` bash
+ansible-playbook \
+  windows-rtlab-test.yml \
+  -i "<ip-address>," --user "<user_name>" --ask-pass
+
+  #ansible-playbook windows-rtlab-test.yml -i "192.168.120.235," --user "John Doe" --ask-pass
 ```
 
 ## Alternatives
