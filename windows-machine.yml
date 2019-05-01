@@ -1,27 +1,22 @@
 ---
-- name: Konfiguration fuer windows rtlab host
+- name: Konfiguration fuer windows host
   hosts: all
   vars:
-    #ansible_user: user
-    #ansible_password: user
+    ansible_user: Pia   # Set your username here
+    # ansible_password: user
     ansible_connection: winrm
     ansible_winrm_server_cert_validation: ignore
   tasks:
 
-    # - name: Install kicad
-    #   win_chocolatey:
-    #     name: kicad
-    #     state: present
+    - name: Install kicad
+      win_chocolatey:
+        name: kicad
+        state: present
 
     - name: Install vscode
       win_chocolatey:
         name: vscode
         state: present
-
-    # - name: Install arduino
-    #   win_chocolatey:
-    #     name: arduino
-    #     state: present
 
     - name: Install git
       win_chocolatey:
@@ -38,37 +33,82 @@
         name: freecad
         state: present
 
-    # - name: Install autodesk-fusion360
-    #   win_chocolatey:
-    #     name: autodesk-fusion360
-    #     state: present
-
-    # - name: Install gitkraken
-    #   win_chocolatey:
-    #     name: gitkraken
-    #     state: present
-
-    # - name: Install notepadplusplus
-    #   win_chocolatey:
-    #     name: notepadplusplus
-    #     state: latest
-
-    # - name: Install libreoffice-fresh
-    #   win_chocolatey:
-    #     name: libreoffice-fresh
-    #     state: latest
-
-    # - name: Install foxitreader
-    #   win_chocolatey:
-    #     name: foxitreader
-    #     state: present
-
-    # - name: Install firefox
-    #   win_chocolatey:
-    #     name: firefox
-    #     state: latest
-
     - name: Install googlechrome
       win_chocolatey:
         name: googlechrome
         state: latest
+
+    - name: Install autodesk-fusion360
+      win_chocolatey:
+        name: autodesk-fusion360
+        state: present
+
+    - name: Install docker-cli
+      win_chocolatey:
+        name: docker-cli
+        state: latest
+
+    - name: Install synctrayzor
+      win_chocolatey:
+        name: synctrayzor
+        state: latest
+
+############################################################################
+## Change Registry 
+
+    - name: Show Hidden Files in Explorer
+      win_regedit:
+        path: HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced
+        name: Hidden
+        data: 1
+
+    - name: Show Hidden System Files in Explorer
+      win_regedit:
+        path: HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced
+        name: ShowSuperHidden
+        data: 1
+
+    - name: Show File Extension in Explorer
+      win_regedit:
+        path: HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced
+        name: HideFileExt
+        data: 0
+
+############################################################################
+## Add Git Repos
+
+    - name: Create directory structure
+      win_file:
+        path: "C:\\Users\\{{ansible_user}}\\Projects"
+        state: directory
+
+    - name: win-git clone adolfs-frontend (For this to work, a git clone must be made once on the windows machine [confirm ssh key])
+      win_git:
+        repo: "git@github.com:piapiekarek/adolfs-frontend.git"
+        dest: "C:\\Users\\{{ansible_user}}\\Projects\\adolfs-frontend"
+        branch: master
+        update: no
+        accept_hostkey: yes
+
+####################### Add Kicad plugins #######################
+    - name: Create directory structure for Kicad
+      win_file:
+        path: "%APPDATA%\\kicad\\scripting\\plugins"
+        state: directory
+
+    - name: win-git clone kicad_rt_export script
+      win_git:
+        repo: "git@github.com:RT-CUSTOMZ/kicad_rt_export.git"
+        dest: "%APPDATA%\\kicad\\scripting\\plugins\\kicad_rt_export"
+        branch: master
+        update: yes
+        accept_hostkey: yes
+
+    - name: win-git clone InteractiveHtmlBom
+      win_git:
+        repo: "git@github.com:openscopeproject/InteractiveHtmlBom.git"
+        dest: "%APPDATA%\\kicad\\scripting\\plugins\\InteractiveHtmlBom"
+        branch: master
+        update: yes
+        accept_hostkey: yes
+

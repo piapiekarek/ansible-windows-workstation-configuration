@@ -79,7 +79,8 @@ $ ansible-playbook <File_Name>
 # or with a group
 $ ansible-playbook <File_Name> -l group_name_1
 ```
+## Add 
+`git clone git@github.com:tivrobo/ansible-win_git.git` into DEFAULT_MODULE_UTILS_PATH: 
+~/.ansible/plugins/module_utils:/usr/share/ansible/plugins/module_utils
 
-## Alternatives
-
-https://www.opsi.org/
+The git clone only works if the ssh key of the device is given to Git in advance
