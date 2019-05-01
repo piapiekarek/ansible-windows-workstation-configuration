@@ -15,6 +15,7 @@ sudo dnf install python3-winrm
 ```
 
 ## WinRM Setup
+> on windows host
 
 To access the client machines from remote winrm is used.
 
@@ -33,7 +34,7 @@ powershell.exe -ExecutionPolicy ByPass -File $file
 ## Requirements for yml file
 Change ansible_user and ansible_password in the vars section before running the script!
 
-## Run on Ansible host
+### Run on Ansible host
 
 ``` bash
 ansible-playbook \
@@ -46,7 +47,10 @@ ansible-playbook \
 
 Warning: The command above needs a comma separated list of arguments, thus the comma at the end of the IP Address.
 
-instead of passing the arguments in the command line, you can set them inside the yml file (uncomment the lines ansible_user and ansible_password, and set both)
+### Set password and username in yml file instead of command line
+
+Instead of passing the username and password arguments in the command line, you can set them inside the yml file (uncomment the lines ansible_user and ansible_password, and set both)
+
 Afterwards run the following command:
 
 ``` bash
@@ -57,7 +61,7 @@ ansible-playbook \
   #ansible-playbook windows-rtlab-test.yml -i "192.168.120.235,"
 ```
 
-## Using inventory
+### Using inventory
 
 Instead of passing the ip-addresses as arguments, they can be written into the inventoryfile (default: `/etc/ansible/hosts`)
 ```bash
@@ -79,8 +83,24 @@ $ ansible-playbook <File_Name>
 # or with a group
 $ ansible-playbook <File_Name> -l group_name_1
 ```
-## Add 
-`git clone git@github.com:tivrobo/ansible-win_git.git` into DEFAULT_MODULE_UTILS_PATH: 
-~/.ansible/plugins/module_utils:/usr/share/ansible/plugins/module_utils
+## Git for Windows
+> on ansible host
 
-The git clone only works if the ssh key of the device is given to Git in advance
+In order to do the cloning of git repositories on the windows machine, clone this repository to any location.
+```bash
+git clone git@github.com:tivrobo/ansible-win_git.git
+``` 
+Change into the new folder and copy the two files **win_git.ps1** and **win_git.py** into *DEFAULT_MODULE_UTILS_PATH*: 
+```bash
+sudo cp ./win_git.ps1 /usr/share/ansible/plugins/module_utils
+sudo cp ./win_git.py /usr/share/ansible/plugins/module_utils
+```
+
+> on windows host
+
+The git clone only works if the ssh key of the device is given to Git in advance and the git clone command was used once.
+
+[Generate an ssh key](https://git-scm.com/book/it/v2/Git-on-the-Server-Generating-Your-SSH-Public-Key) in Powershell.
+
+
+Copy the output of cat [Ctrl + Shift + C] and [follow this instruction from Step 2](https://help.github.com/en/articles/adding-a-new-ssh-key-to-your-github-account)
