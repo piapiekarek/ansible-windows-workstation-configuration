@@ -73,10 +73,10 @@
         name: putty
         state: latest
 
-    - name: Install skype
-      win_chocolatey:
-        name: skype
-        state: latest
+    # - name: Install skype
+    #   win_chocolatey:
+    #     name: skype
+    #     state: latest
 
     - name: Install teamviewer
       win_chocolatey:
@@ -93,10 +93,10 @@
         name: calibre
         state: latest
 
-    - name: Install spotify
-      win_chocolatey:
-        name: spotify
-        state: latest
+    # - name: Install spotify
+    #   win_chocolatey:
+    #     name: spotify
+    #     state: latest
 
     - name: Install pdf24
       win_chocolatey:
