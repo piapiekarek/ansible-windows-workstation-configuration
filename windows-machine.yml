@@ -2,8 +2,8 @@
 - name: Konfiguration fuer windows host
   hosts: all
   vars:
-    ansible_user: Pia   # Set your username here
-    # ansible_password: user
+    # ansible_user: user      # Set your username for windows here
+    # ansible_password: user  # Set your password for windows here
     ansible_connection: winrm
     ansible_winrm_server_cert_validation: ignore
   tasks:
