@@ -1,0 +1,253 @@
+---
+- name: Konfiguration fuer windows host
+  hosts: all
+  vars:
+    ansible_user: Pia
+    ansible_password: GET1n2outlook
+    ansible_connection: winrm
+    ansible_winrm_server_cert_validation: ignore
+    become_method: runas
+  tasks:
+    - name: Install multiple packages sequentially (leave present - if there)
+      win_chocolatey:
+        name: '{{ item }}'
+        state: present
+      with_items:
+         - adobereader
+         - cpu-z
+         - cura-new
+         - discord
+         - epicgameslauncher
+         - googlechrome
+         - kicad
+         - obs-studio
+         - openscad
+         - orcaslicer
+         - parsec
+         - pdf24
+         - prusaslicer
+         - putty
+         - spotify
+         - steam
+         - streamdeck
+         - teamviewer
+         - virtualbox
+         - vscode
+         - 7zip
+         - leagueoflegendseune
+        # - git
+        # - autodesk-fusion360
+        # - ubisoft-connect
+
+
+
+        # - docker-desktop
+        # - docker-compose
+        # - synctrayzor
+        # - nodejs
+
+    - name: Install multiple packages sequentially (latest)
+      win_chocolatey:
+        name: '{{ item }}'
+        state: latest
+      with_items:
+        # - inkscape
+        # - freecad
+        # - googlechrome
+        # - vlc
+        # - skype
+        # - calibre
+        # - jetbrainstoolbox
+         - 
+
+    # - name: uninstall multiple packages
+    #   win_chocolatey:
+    #     name:
+    #     - putty
+    #     - inkscape
+    #     state: absent
+
+############################################################################
+## Change Registry 
+## Parts were copied or changed according to https://github.com/crombeen/ansible
+    - name: Registry configuration
+      become_user: '{{ ansible_user }}'
+      win_regedit:
+        path: '{{ item.path }}'
+        name: '{{ item.name }}'
+        data: '{{ item.data|default(None) }}'
+        type: '{{ item.type|default("dword") }}'
+        state: '{{ item.state|default("present") }}'
+      with_items:
+        # Show Hidden Files in Explorer
+        - path: HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced
+          name: Hidden
+          data: 1
+
+        # Show Hidden System Files in Explorer
+        - path: HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced
+          name: ShowSuperHidden
+          data: 1
+
+        # Show File Extension in Explorer
+      
+        - path: HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced
+          name: HideFileExt
+          data: 0
+
+        # # Disable Cortana (Windows 10 Anniversary+)
+        # - path: HKLM:\SOFTWARE\Policies\Microsoft\Windows\Windows Search
+        #   name: AllowCortana
+        #   data: 0
+
+        # # Do not add "-Shortcut" text to the name of newly created shortcuts
+        # - path: HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer
+        #   name: link
+        #   data: hex:00,00,00,00
+        #   type: binary
+
+        # # Do not show notifications/adverts (OneDrive & new features) in Windows Explorer
+        # - path: HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced
+        #   name: ShowSyncProviderNotifications
+        #   data: 0
+
+        # # Disable people button in taskbar
+        # - path: HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced\People
+        #   name: PeopleBand
+        #   data: 0
+    
+##TODO: Extend Registry Entryies for Taskbar
+
+############################################################################
+## Disable default services
+## Parts were copied or changed according to https://github.com/crombeen/ansible
+    - name: Disable default services
+      win_service:
+        name: '{{ item }}'
+        start_mode: disabled
+        state: stopped
+      with_items:
+      - diagnosticshub.standardcollector.service # Microsoft (R) Diagnostics Hub Standard Collector Service
+      - DiagTrack                                # Diagnostics Tracking Service
+      - lfsvc                                    # Geolocation Service
+      - WMPNetworkSvc                            # Windows Media Player Network Sharing Service
+      - XblAuthManager                           # Xbox Live Auth Manager
+      - XblGameSave                              # Xbox Live Game Save Service
+      - XboxNetApiSvc                            # Xbox Live Networking Service
+      tags: services
+############################################################################
+## Add Git Repos
+
+    # - name: Create directory structure
+    #   win_file:
+    #     path: "C:\\Users\\{{ansible_user}}\\Projects"
+    #     state: directory
+
+    # - name: win-git clone adolfs-frontend (For this to work, a git clone must be made once on the windows machine [confirm ssh key])
+    #   win_git:
+    #     repo: "git@github.com:piapiekarek/adolfs-frontend.git"
+    #     dest: "C:\\Users\\{{ansible_user}}\\Projects\\adolfs-frontend"
+    #     branch: master
+    #     update: no
+    #     accept_hostkey: yes
+
+    # - name: win-git clone lab-ansible-cad-workstation-configuration
+    #   win_git:
+    #     repo: "git@github.com:RT-CUSTOMZ/lab-ansible-cad-workstation-configuration.git"
+    #     dest: "C:\\Users\\{{ansible_user}}\\Projects\\lab-ansible-cad-workstation-configuration"
+    #     branch: master
+    #     update: no
+    #     accept_hostkey: yes
+
+    # - name: win-git clone PI-Setup-Kioskmode
+    #   win_git:
+    #     repo: "git@github.com:RT-CUSTOMZ/PI-Setup-Kioskmode.git"
+    #     dest: "C:\\Users\\{{ansible_user}}\\Projects\\pi-setup-kioskmode"
+    #     branch: master
+    #     update: no
+    #     accept_hostkey: yes
+    # - name: win-git clone RT-CUSTOMZ.github.io.git
+    #   win_git:
+    #     repo: "git@github.com:RT-CUSTOMZ/RT-CUSTOMZ.github.io.git"
+    #     dest: "C:\\Users\\{{ansible_user}}\\Projects\\rt-customz.github.io"
+    #     branch: master
+    #     update: no
+    #     accept_hostkey: yes
+    
+    # - name: win-git clone CoffeeScale-HW
+    #   win_git:
+    #     repo: "git@github.com:RT-CUSTOMZ/CoffeeScale-HW.git"
+    #     dest: "C:\\Users\\{{ansible_user}}\\Projects\\coffeeScale-HW"
+    #     branch: master
+    #     update: no
+    #     accept_hostkey: yes
+
+####################### Add Kicad plugins #######################
+    # - name: Create directory structure for Kicad
+    #   win_file:
+    #     path: "APPDATA\\Roaming\\kicad\\scripting\\plugins"
+    #     state: directory
+
+    # - name: win-git clone kicad_rt_export script
+    #   win_git:
+    #     repo: "git@github.com:RT-CUSTOMZ/kicad_rt_export.git"
+    #     dest: "AppData\\Roaming\\kicad\\scripting\\plugins\\kicad_rt_export"
+    #     branch: master
+    #     update: yes
+    #     accept_hostkey: yes
+
+    # - name: win-git clone InteractiveHtmlBom
+    #   win_git:
+    #     repo: "git@github.com:openscopeproject/InteractiveHtmlBom.git"
+    #     dest: "AppData\\Roaming\\kicad\\scripting\\plugins\\InteractiveHtmlBom"
+    #     branch: master
+    #     update: yes
+    #     accept_hostkey: yes
+
+############################################################################
+## Change Start Menu of Windows
+    # - name: Create directory structure Temp File
+    #   win_file:
+    #     path: "C:\\Ansible_Temp\\"
+    #     state: directory
+    #   become_user: '{{ ansible_user }}'
+
+    # - name: Ansible create file with content example
+    #   win_copy:
+    #     dest: "C:\\Ansible_Temp\\DesktopLayout.xml"
+    #     content: |
+    #       <LayoutModificationTemplate xmlns:defaultlayout="http://schemas.microsoft.com/Start/2014/FullDefaultLayout" xmlns:start="http://schemas.microsoft.com/Start/2014/StartLayout" Version="1" xmlns="http://schemas.microsoft.com/Start/2014/LayoutModification">
+    #         <LayoutOptions StartTileGroupCellWidth="6" />
+    #         <DefaultLayoutOverride>
+    #           <StartLayoutCollection>
+    #             <defaultlayout:StartLayout GroupCellWidth="6">
+    #               <start:Group Name="Allgemein">
+    #                 <start:Tile Size="4x2" Column="2" Row="0" AppUserModelID="microsoft.windowscommunicationsapps_8wekyb3d8bbwe!Microsoft.WindowsLive.Mail" />
+    #                 <start:DesktopApplicationTile Size="2x2" Column="4" Row="2" DesktopApplicationLinkPath="%ALLUSERSPROFILE%\Microsoft\Windows\Start Menu\Programs\calibre 64bit - E-book Management\calibre 64bit - E-book management.lnk" />
+    #                 <start:DesktopApplicationTile Size="2x2" Column="2" Row="2" DesktopApplicationLinkPath="%ALLUSERSPROFILE%\Microsoft\Windows\Start Menu\Programs\7-Zip\7-Zip File Manager.lnk" />
+    #                 <start:DesktopApplicationTile Size="2x2" Column="0" Row="4" DesktopApplicationLinkPath="%ALLUSERSPROFILE%\Microsoft\Windows\Start Menu\Programs\Google Chrome.lnk" />
+    #                 <start:DesktopApplicationTile Size="2x2" Column="2" Row="4" DesktopApplicationLinkPath="%ALLUSERSPROFILE%\Microsoft\Windows\Start Menu\Programs\Inkscape 0.92.4\Inkscape 0.92.4.lnk" />
+    #                 <start:Tile Size="2x2" Column="0" Row="0" AppUserModelID="microsoft.windowscommunicationsapps_8wekyb3d8bbwe!Microsoft.WindowsLive.Calendar" />
+    #                 <start:DesktopApplicationTile Size="2x2" Column="0" Row="2" DesktopApplicationLinkPath="%ALLUSERSPROFILE%\Microsoft\Windows\Start Menu\Programs\PDF24.lnk" />
+    #               </start:Group>
+    #               <start:Group Name="Hardware Development and CAD">
+    #                 <start:DesktopApplicationTile Size="2x2" Column="2" Row="0" DesktopApplicationLinkPath="%APPDATA%\Microsoft\Windows\Start Menu\Programs\JetBrains Toolbox\JetBrains Toolbox.lnk" />
+    #                 <start:DesktopApplicationTile Size="2x2" Column="0" Row="0" DesktopApplicationLinkPath="%ALLUSERSPROFILE%\Microsoft\Windows\Start Menu\Programs\KiCad\KiCad.lnk" />
+    #                 <start:DesktopApplicationTile Size="2x2" Column="4" Row="0" DesktopApplicationLinkPath="%ALLUSERSPROFILE%\Microsoft\Windows\Start Menu\Programs\FreeCAD 0.18\FreeCAD.lnk" />
+    #                 <start:DesktopApplicationTile Size="2x2" Column="0" Row="2" DesktopApplicationLinkPath="%ALLUSERSPROFILE%\Microsoft\Windows\Start Menu\Programs\Autodesk\Autodesk Fusion 360.lnk" />
+    #               </start:Group>
+    #               <start:Group Name="Software Development">
+    #                 <start:DesktopApplicationTile Size="2x2" Column="0" Row="2" DesktopApplicationLinkPath="%ALLUSERSPROFILE%\Microsoft\Windows\Start Menu\Programs\Git\Git Bash.lnk" />
+    #                 <start:DesktopApplicationTile Size="2x2" Column="4" Row="0" DesktopApplicationLinkPath="%ALLUSERSPROFILE%\Microsoft\Windows\Start Menu\Docker Desktop.lnk" />
+    #                 <start:DesktopApplicationTile Size="2x2" Column="0" Row="0" DesktopApplicationLinkPath="%ALLUSERSPROFILE%\Microsoft\Windows\Start Menu\Programs\Node.js\Node.js.lnk" />
+    #                 <start:Tile Size="2x2" Column="2" Row="0" AppUserModelID="CanonicalGroupLimited.UbuntuonWindows_79rhkp1fndgsc!ubuntu" />
+    #               </start:Group>
+    #             </defaultlayout:StartLayout>
+    #           </StartLayoutCollection>
+    #         </DefaultLayoutOverride>
+    #       </LayoutModificationTemplate>
+    #   become_user: '{{ ansible_user }}'
+
+    # - name: Import-StartLayout in Powershell
+    #   win_shell: Import-StartLayout –LayoutPath C:\\Ansible_Temp\\DesktopLayout.xml -MountPath $env:SystemDrive\\
+    #   become_user: '{{ ansible_user }}'
